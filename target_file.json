@@ -1,0 +1,82 @@
+{
+  "启动图片": {
+    "description": "____，启动！",
+    "files": [
+      {
+        "name": "启动图片",
+        "path": "Main/Resources/startup/SplashScreen.png",
+        "description": "这 下 看 懂 了"
+      }
+    ]
+  },
+  "倒计时组件": {
+    "description": "修改倒计时相关的音效和图片",
+    "files": [
+      {
+        "name": "倒计时警告音效",
+        "path": "Main/.packages/Sounds/TimerWarning.mp3",
+        "description": "倒计时剩下最后三秒的提示音"
+      },
+      {
+        "name": "倒计时结束音效",
+        "path": "Main/.packages/Sounds/TimerEnding.mp3",
+        "description": "倒计时结束声音"
+      }
+    ]
+  },
+  "游戏组件 - 判断": {
+    "description": "修改森林运动会的背景图片音乐，角色，UI控件等资源",
+    "files": [
+      {
+        "name": "背景音乐",
+        "path": "Main/.packages/Activities/Audios/Judge/BackgroundMusic.mp3",
+        "description": "刻进DNA的音乐，这段音频会被重复播放"
+      },
+      {
+        "name": "活动结束音效",
+        "path": "Main/.packages/Activities/Audios/Judge/ActivityFinish.mp3",
+        "description": "活动结束时播放的音效"
+      },
+      {
+        "name": "Amazing音效",
+        "path": "Main/.packages/Activities/Audios/Judge/Amazing.mp3",
+        "description": "当两边判断都正确时播放的音效"
+      },
+      {
+        "name": "答题按钮点击音效",
+        "path": "Main/.packages/Activities/Audios/Judge/AnswerButtonClick.mp3",
+        "description": "点击答题按钮时播放的音效"
+      },
+      {
+        "name": "喝彩音效",
+        "path": "Main/.packages/Activities/Audios/Judge/AuditoriumBackground.mp3",
+        "description": "游戏结束的鼓掌声"
+      },
+      {
+        "name": "ComeOnFight音效",
+        "path": "Main/.packages/Activities/Audios/Judge/ComeOnFight.mp3",
+        "description": "游戏开始时的语音资源"
+      }
+    ]
+  },
+  "NSIS相关": {
+    "description": "修改卸载希沃白板时的提示文本",
+    "files": [
+      {
+        "name": "提示文本（简体中文）",
+        "path": "nsishelper/Locations/zh-CHS.yml",
+        "description": "卸载希沃白板时的提示文本"
+      },
+      {
+        "name": "提示文本（繁体中文）",
+        "path": "nsishelper/Locations/zh-CHT.yml",
+        "description": "卸载希沃白板时的提示文本"
+      },
+      {
+        "name": "提示文本（英语）",
+        "path": "nsishelper/Locations/en-US.yml",
+        "description": "卸载希沃白板时的提示文本"
+      }
+    ]
+  }
+}
