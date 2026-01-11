@@ -41,6 +41,7 @@ from qfluentwidgets import (
     CheckBox,
     ComboBox,
     CommandBar,
+    Dialog,
     ExpandGroupSettingCard,
     FlowLayout,
     FluentFontIconBase,
@@ -148,7 +149,7 @@ class EasiNoteThemePatcherEngine(QWidget):
     def ask_theme_file(self):
         global setting_data
         sfx_open()
-        self.main_window.setWindowTitle("EasiNote 5 Theme Patcher - 未保存")
+        self.main_window.setWindowTitle("EasiNote Theme Patcher - 未保存")
         file_path, _ = QFileDialog.getOpenFileName(
             self,
             "选择主题文件",
@@ -187,7 +188,7 @@ class EasiNoteThemePatcherEngine(QWidget):
         with open("setting.json", "w", encoding="utf-8") as f:
             json.dump(setting_data, f, ensure_ascii=False, indent=4)
         gotoeditdirectly = False
-        self.main_window.setWindowTitle("EasiNote 5 Theme Patcher - 编辑临时文件")
+        self.main_window.setWindowTitle("EasiNote Theme Patcher - 编辑临时文件")
 
     def patch_theme(self):
         temp_dir = "./temp"
@@ -235,7 +236,7 @@ class AudioPlayerWidget(QWidget):
             )
         self.audio_icon.setScaledContents(False)
         self.audio_icon.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.audio_icon)
+        layout.addWidget(self.audio_icon, alignment=Qt.AlignCenter)
 
         # 文件名显示
         self.file_name_label = CaptionLabel("未选择音频文件")
@@ -630,14 +631,14 @@ class BannerWidget(QWidget):
         self.main_window = main_window
         self.setFixedHeight(400)
 
-        self.banner_pix = QPixmap("./banner.png")  # 你的背景图
+        self.banner_pix = QPixmap("./banner.png")
         layout = QVBoxLayout(self)
         layout.setContentsMargins(36, 36, 0, 0)
         layout.setSpacing(0)
         layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        title = TitleLabel("EasiNote 5 Theme Patcher", self)
+        title = TitleLabel("EasiNote Theme Patcher", self)
         layout.addWidget(title)
-        subtitle = SubtitleLabel("Makes EasiNote 5 Great Again!", self)
+        subtitle = SubtitleLabel("为更离谱的互动教学而生！", self)
         layout.addWidget(subtitle)
         cardArea = QWidget(self)
         cardLayout = QHBoxLayout(cardArea)
@@ -676,11 +677,11 @@ class BannerWidget(QWidget):
         self.addCard(
             cardLayout,
             "Resource/Stickers/help.png",
-            "寻求帮助",
-            "这里会有很多人来帮助你",
+            "帮助文档",
+            "不会用就先看看",
             onClick=lambda: (
                 sfx_open(),
-                os.startfile("https://xxtsoft.top/support/ENTP/help.html"),
+                os.startfile("https://xxtsoft.top/articles/entp.html"),
             ),
         )
 
@@ -729,7 +730,6 @@ class BannerWidget(QWidget):
         self.main_window.switchTo(self.main_window.store_page)
 
     def paintEvent(self, event):
-        """背景图铺满整个 Banner（无渐变）"""
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
 
@@ -814,6 +814,7 @@ class ProfilePage(SmoothScrollArea):
             "配置文件",
             onClick=lambda: os.startfile("setting.json"),
         )
+        self.profilelayout.addLayout(self.userlayout)
         if not setting_data.get("profile_banner", True):
             self.profileWidget.setVisible(False)
 
@@ -951,16 +952,23 @@ class ProfilePage(SmoothScrollArea):
         color_choicer.setFixedWidth(135)
         color_picker.setFixedWidth(135)
         font_choicer.setFixedWidth(135)
-        aboutpage_switch = SwitchButton
         if setting_data.get("allow_about"):
             aboutpage_switch = SwitchButton()
             aboutpage_switch.setChecked(bool(setting_data.get("allow_about", True)))
         else:
             aboutpage_switch = SwitchButton()
             aboutpage_switch.setChecked(bool(setting_data.get("allow_about", False)))
-
+        if setting_data.get("enable_pjsk"):
+            pjsk_switch = SwitchButton()
+            pjsk_switch.setChecked(bool(setting_data.get("enable_pjsk", True)))
+        else:
+            pjsk_switch = SwitchButton()
+            pjsk_switch.setChecked(bool(setting_data.get("enable_pjsk", False)))
         aboutpage_switch.checkedChanged.connect(
             lambda: self.on_about_changed(aboutpage_switch.isChecked)
+        )
+        pjsk_switch.checkedChanged.connect(
+            lambda: self.on_pjsk_changed(pjsk_switch.isChecked)
         )
         card.addGroup(
             icon=PhotoFontIcon("\ue706"),
@@ -986,6 +994,12 @@ class ProfilePage(SmoothScrollArea):
             content="若关闭此选项，不会在侧边栏上显示关于页面",
             widget=aboutpage_switch,
         )
+        card.addGroup(
+            icon=PhotoFontIcon("\uf4aa"),
+            title="Project Sekai 贴纸",
+            content="在班级等公共场合可关闭此选项以免社死",
+            widget=aboutpage_switch,
+        )
         layout.addWidget(card)
 
     def pandora_boxxx(self, layout):
@@ -1009,6 +1023,15 @@ class ProfilePage(SmoothScrollArea):
         )
 
         layout.addWidget(card)
+
+    def on_pjsk_changed(self, checked):
+        global setting_data
+        if checked:
+            setting_data["enable_pjsk"] = True
+            json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+        else:
+            setting_data["enable_pjsk"] = False
+            json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
 
     def on_about_changed(self, checked):
         global setting_data
@@ -1280,9 +1303,15 @@ class EditPage(SmoothScrollArea):
         self.init_ui()
 
     def load_icons(self):
-        self.icons["error"] = QPixmap("./Resource/Stickers/error_icon.png")
-        self.icons["info"] = QPixmap("./Resource/Stickers/info_icon.png")
-        self.icons["folder"] = QPixmap("./Resource/Stickers/folder_icon.png")
+        global setting_data
+        if setting_data["enable_pjsk"]:
+            self.icons["error"] = QPixmap("./Resource/Stickers/error_icon.png")
+            self.icons["info"] = QPixmap("./Resource/Stickers/info_icon.png")
+            self.icons["folder"] = QPixmap("./Resource/Stickers/folder_icon.png")
+        else:
+            self.icons["error"] = PhotoFontIcon("\ue783")
+            self.icons["info"] = PhotoFontIcon("\ue946")
+            self.icons["folder"] = PhotoFontIcon("\ue838")
 
     def init_ui(self):
         self.setObjectName("EditPage")
@@ -1306,7 +1335,7 @@ class EditPage(SmoothScrollArea):
         self.add_file_browser_section(main_layout)
         global get_correct_path, newest_path, gotoeditdirectly
         if gotoeditdirectly:
-            self.main_window.setWindowTitle("EasiNote 5 Theme Patcher - 实时编辑模式")
+            self.main_window.setWindowTitle("EasiNote Theme Patcher - 实时编辑模式")
             InfoBar.warning(
                 "实时编辑模式",
                 "正在直接修改希沃白板文件，修改后不能撤销，安全起见请先备份整个文件夹",
@@ -1324,7 +1353,7 @@ class EditPage(SmoothScrollArea):
     def add_file_browser_section(self, layout):
         """添加文件浏览器和预览区域"""
         # 创建分割器，可以调整左右大小
-
+        global setting_data
         splitter = QSplitter(Qt.Horizontal)
         splitter.setChildrenCollapsible(False)
 
@@ -1363,11 +1392,13 @@ class EditPage(SmoothScrollArea):
         preview_card_layout.setSpacing(15)
         self.command_bar = CommandBar(parent=self)
         self.command_actions["save"] = Action(
-            PhotoFontIcon("\ue74e"), "保存工程文件（Ctrl+S）", shortcut="Ctrl+S"
+            PhotoFontIcon("\ue74e"), "导出主题包（Ctrl+S）", shortcut="Ctrl+S"
         )
         # 保存各个动作的引用
         self.command_actions["export"] = Action(
-            PhotoFontIcon("\ue78c"), "导出文件（Ctrl+Shift+S）", shortcut="Ctrl+Shift+S"
+            PhotoFontIcon("\ue78c"),
+            "导出选中的文件（Ctrl+Shift+S）",
+            shortcut="Ctrl+Shift+S",
         )
         self.command_actions["replace"] = Action(
             PhotoFontIcon("\ue8eb"), "替换文件（Ctrl+R）", shortcut="Ctrl+R"
@@ -1376,7 +1407,9 @@ class EditPage(SmoothScrollArea):
             PhotoFontIcon("\ue7a7"), "恢复原始文件"
         )
         self.command_actions["edit"] = Action(PhotoFontIcon("\ue70f"), "编辑文件")
-        self.command_actions["copy"] = Action(PhotoFontIcon("\ue8c8"), "复制文件")
+        self.command_actions["copy"] = Action(
+            PhotoFontIcon("\ue8c8"), "复制文件 (Ctrl+C)", shortcut="Ctrl+C"
+        )
         self.command_actions["open_folder"] = Action(
             PhotoFontIcon("\ue8da"), "打开文件所在目录"
         )
@@ -1386,7 +1419,8 @@ class EditPage(SmoothScrollArea):
         self.command_actions["run"] = Action(
             PhotoFontIcon("\ue709"), "调试 - 启动希沃白板（F5）", shortcut="F5"
         )
-        # 添加动作到命令栏
+        self.command_actions["delete"] = Action(PhotoFontIcon("\ue74d"), "抛弃临时文件")
+
         self.command_bar.addAction(self.command_actions["save"])
         self.command_bar.addAction(self.command_actions["export"])
         self.command_bar.addAction(self.command_actions["replace"])
@@ -1400,12 +1434,13 @@ class EditPage(SmoothScrollArea):
         self.command_bar.addAction(self.command_actions["info"])
         self.command_bar.addSeparator()
         self.command_bar.addAction(self.command_actions["run"])
+        self.command_bar.addAction(self.command_actions["delete"])
 
-        # 初始禁用所有按钮
         self.disable_all_actions()
+        if setting_data["edit_temp_before_close"]:
+            self.command_actions["delete"].setEnabled(True)
         self.command_actions["run"].setEnabled(True)
 
-        # 连接动作信号
         self.command_actions["save"].triggered.connect(self.on_save_project)
         self.command_actions["export"].triggered.connect(self.on_export_file)
         self.command_actions["replace"].triggered.connect(self.on_replace_file)
@@ -1417,9 +1452,9 @@ class EditPage(SmoothScrollArea):
         self.command_actions["json"].triggered.connect(self.on_json_mode)
         self.command_actions["info"].triggered.connect(self.on_file_info)
         self.command_actions["run"].triggered.connect(self.on_run_seewo)
+        self.command_actions["delete"].triggered.connect(self.on_rm_temp)
         preview_card_layout.addWidget(self.command_bar)
 
-        # 图片预览框
         self.image_preview_frame = QWidget()
         self.image_preview_frame.setMinimumSize(400, 300)
         self.image_preview_frame.setStyleSheet("""
@@ -1468,7 +1503,6 @@ class EditPage(SmoothScrollArea):
         self.audio_player_widget.setVisible(False)
         preview_card_layout.addWidget(self.audio_player_widget)
 
-        # 文本编辑器区域（初始隐藏）
         self.text_editor_widget = TextEditorWidget()
         self.text_editor_widget.setVisible(False)
         preview_card_layout.addWidget(self.text_editor_widget)
@@ -1476,14 +1510,13 @@ class EditPage(SmoothScrollArea):
         right_layout.addWidget(self.preview_card)
         self.tree_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.preview_card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        # 添加到分割器
+
         splitter.addWidget(left_widget)
         splitter.addWidget(right_widget)
-        splitter.setSizes([400, 500])  # 设置初始大小比例
+        splitter.setSizes([400, 500])
 
         layout.addWidget(splitter)
 
-        # 设置初始状态
         self.show_info_message("请选择文件进行预览")
         self.tree_view.selectionModel().selectionChanged.connect(
             self.on_tree_selection_changed
@@ -1494,10 +1527,8 @@ class EditPage(SmoothScrollArea):
         if not indexes:
             return
 
-        # RH 风格：只看当前行的第 0 列
         index = indexes[0].sibling(indexes[0].row(), 0)
 
-        # 复用你原来的逻辑
         self.on_file_clicked(index)
 
     def load_file_data(self):
@@ -1553,7 +1584,6 @@ class EditPage(SmoothScrollArea):
             self.disable_all_actions()
             return
 
-        # 使用全局路径变量
         global newest_path
         full_path = Path(file_path)
         if not full_path.exists():
@@ -1562,6 +1592,10 @@ class EditPage(SmoothScrollArea):
         if not full_path.exists():
             self.show_error_message(f"文件不存在: {str(full_path)}")
             self.disable_all_actions()
+            self.command_actions["delete"].setEnabled(True)
+            self.command_actions["run"].setEnabled(True)
+            self.command_actions["replace"].setEnabled(True)
+            self.command_actions["save"].setEnabled(True)
             return
 
         # 更新当前文件路径和类型
@@ -1645,11 +1679,15 @@ class EditPage(SmoothScrollArea):
         self.image_preview.setVisible(False)
         self.status_container.setVisible(True)
 
-        self.status_icon.setPixmap(
-            self.icons[icon_type].scaled(
-                96, 96, Qt.KeepAspectRatio, Qt.SmoothTransformation
-            )
-        )
+        icon = self.icons[icon_type]
+
+        if isinstance(icon, QPixmap):
+            pix = icon.scaled(96, 96, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        else:
+            # PhotoFontIcon → QIcon → QPixmap
+            pix = icon.icon().pixmap(96, 96)
+
+        self.status_icon.setPixmap(pix)
         self.status_icon.setVisible(True)
         self.status_text.setText(message)
         self.status_text.setVisible(True)
@@ -1663,7 +1701,6 @@ class EditPage(SmoothScrollArea):
         """启用文件相关命令按钮"""
         for key, action in self.command_actions.items():
             action.setEnabled(True)
-        # 播放按钮和编辑按钮根据文件类型单独控制
 
     def on_file_double_clicked(self, index):
         """当文件被双击时"""
@@ -1675,12 +1712,9 @@ class EditPage(SmoothScrollArea):
             else:
                 self.tree_view.expand(index)
             return
-
-        # 否则当作文件处理，显示详细信息
         self.on_file_info()
 
     def create_theme_7z(self):
-        """将修改的文件打包为7z压缩包"""
         # TODO: 弹出对话框让用户输入Name，Author，Description，Tags等元数据
 
         output_path, _ = QFileDialog.getSaveFileName(
@@ -1691,15 +1725,11 @@ class EditPage(SmoothScrollArea):
                 archive.write(temp, os.path.relpath(temp, newest_path))
 
     def preview_image(self, image_path):
-        """预览图片"""
         try:
             pixmap = QPixmap(image_path)
             if not pixmap.isNull():
-                # 隐藏状态容器，显示图片预览
                 self.status_container.setVisible(False)
                 self.image_preview.setVisible(True)
-
-                # 缩放图片以适应预览区域，保持宽高比
                 scaled_pixmap = pixmap.scaled(
                     self.image_preview_frame.width() - 40,
                     self.image_preview_frame.height() - 40,
@@ -1707,8 +1737,6 @@ class EditPage(SmoothScrollArea):
                     Qt.SmoothTransformation,
                 )
                 self.image_preview.setPixmap(scaled_pixmap)
-
-                # 确保图片预览框显示，其他预览组件隐藏
                 self.image_preview_frame.setVisible(True)
                 self.audio_player_widget.setVisible(False)
                 self.text_editor_widget.setVisible(False)
@@ -1718,11 +1746,8 @@ class EditPage(SmoothScrollArea):
             self.show_error_message(f"预览错误: {str(e)}")
 
     def preview_audio(self, audio_path):
-        """预览音频"""
         try:
             self.audio_player_widget.load_audio(audio_path)
-
-            # 隐藏其他预览组件，显示音频播放器
             self.image_preview_frame.setVisible(False)
             self.text_editor_widget.setVisible(False)
             self.audio_player_widget.setVisible(True)
@@ -1733,18 +1758,14 @@ class EditPage(SmoothScrollArea):
         """预览文本文件"""
         try:
             self.text_editor_widget.load_file(text_path)
-
-            # 隐藏其他预览组件，显示文本编辑器
             self.image_preview_frame.setVisible(False)
             self.audio_player_widget.setVisible(False)
             self.text_editor_widget.setVisible(True)
         except Exception as e:
             self.show_error_message(f"加载文本文件错误: {str(e)}")
 
-    # 菜单栏功能实现
     def on_save_project(self):
         sfx_open()
-        """保存项目操作"""
         if setting_data["first_run"]:
             InfoBar.warning(
                 "生成主题包",
@@ -2000,6 +2021,33 @@ class EditPage(SmoothScrollArea):
                 duration=2000,
             )
 
+    def on_rm_temp(self):
+        sfx_open()
+        global setting_data
+        global newest_path
+        global gotoeditdirectly
+        w = Dialog(
+            "丢弃临时文件", "临时目录将被永久删除，问一下你项目导出了吗？", window
+        )
+        w.yesButton.setText("我存了，你删吧")
+        w.cancelButton.setText("卧槽等我一下")
+        if w.exec():
+            setting_data["edit_temp_before_close"] = False
+            newest_path = setting_data["newest_path"]
+            shutil.rmtree("./Temp", ignore_errors=True)
+            with open("setting.json", "w", encoding="utf-8") as f:
+                json.dump(setting_data, f, ensure_ascii=False, indent=4)
+            gotoeditdirectly = True
+            self.main_window.setWindowTitle("EasiNote Theme Patcher - 实时编辑模式")
+        else:
+            sfx_exit()
+            InfoBar.info(
+                title="取消",
+                content="快点存一下呐，别让我催你",
+                duration=1000,
+                parent=self,
+            )
+
     def show_file_details(self, file_path):
         """显示文件详细信息"""
         file_info = Path(file_path)
@@ -2061,12 +2109,13 @@ class MainWindow(FluentWindow):
         self.resize(1200, 700)  # 增加窗口大小以适应新布局
         # 仅在主窗口尚未设置标题时才设置默认标题，以免覆盖来自子页面（如实时编辑模式）的自定义标题
         if not self.windowTitle():
-            self.setWindowTitle("EasiNote 5 Theme Patcher")
+            self.setWindowTitle("EasiNote Theme Patcher")
         self.setWindowIcon(QIcon("Resource/icon.ico"))
 
 
 if __name__ == "__main__":
     builtins.DEBUG = {"sound": True, "app_ready": False}
+
     pygame.mixer.init()
     """
     QApplication.setHighDpiScaleFactorRoundingPolicy(
@@ -2099,6 +2148,7 @@ if __name__ == "__main__":
     if setting_data["edit_temp_before_close"]:
         window.switchTo(window.edit_page)
         window.setWindowTitle("欢迎回来 - 从上次离开的地方继续编辑")
+    app.setAttribute(Qt.ApplicationAttribute.AA_DontCreateNativeWidgetSiblings)
 
     DEBUG["app_ready"] = True
     app.exec()
