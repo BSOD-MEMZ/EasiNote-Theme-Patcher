@@ -10,7 +10,7 @@
     ]
   },
   "倒计时组件": {
-    "description": "修改倒计时相关的音效和图片",
+    "description": "修改倒计时相关的音效",
     "files": [
       {
         "name": "倒计时警告音效",
@@ -24,8 +24,18 @@
       }
     ]
   },
-  "游戏组件 - 判断": {
-    "description": "修改森林运动会的背景图片音乐，角色，UI控件等资源",
+  "游戏组件 - 全局": {
+    "description": "修改会被多种游戏复用的资源",
+    "files": [
+      {
+        "name": "背景音乐",
+        "path": "Main/.packages/Activities/Audios/Judge/BackgroundMusic.mp3",
+        "description": "刻进DNA的音乐，这段音频会被重复播放"
+      }
+    ]
+  },
+  "游戏组件 - 运动会": {
+    "description": "修改运动会（判断题）的背景图片音乐，角色，UI控件等资源",
     "files": [
       {
         "name": "背景音乐",
@@ -56,6 +66,111 @@
         "name": "ComeOnFight音效",
         "path": "Main/.packages/Activities/Audios/Judge/ComeOnFight.mp3",
         "description": "游戏开始时的语音资源"
+      }
+    ]
+  },
+  "PPT音效": {
+    "description": "修改PPT中一些奇奇怪怪的音效，这些音效在PowerPoint和WPS中是一样的",
+    "files": [
+      {
+        "name": "鼓掌",
+        "path": "Main/.packages/Sounds/Animation/Applause.wav",
+        "description": ""
+      },
+      {
+        "name": "箭头",
+        "path": "Main/.packages/Sounds/Animation/Arrow.wav",
+        "description": ""
+      },
+      {
+        "name": "爆炸",
+        "path": "Main/.packages/Sounds/Animation/Bomb.wav",
+        "description": ""
+      },
+      {
+        "name": "照相机",
+        "path": "Main/.packages/Sounds/Animation/Camera.wav",
+        "description": ""
+      },
+      {
+        "name": "收款机",
+        "path": "Main/.packages/Sounds/Animation/Cashreg.wav",
+        "description": ""
+      },
+      {
+        "name": "风铃",
+        "path": "Main/.packages/Sounds/Animation/Chimes.wav",
+        "description": ""
+      },
+      {
+        "name": "硬币",
+        "path": "Main/.packages/Sounds/Animation/Coin.wav",
+        "description": ""
+      },
+      {
+        "name": "军鼓",
+        "path": "Main/.packages/Sounds/Animation/Drumroll.wav",
+        "description": ""
+      },
+      {
+        "name": "激光",
+        "path": "Main/.packages/Sounds/Animation/Laser.wav",
+        "description": ""
+      },
+      {
+        "name": "风声",
+        "path": "Main/.packages/Sounds/Animation/Wind.wav",
+        "description": ""
+      }
+    ]
+  },
+  "艺术字纹理": {
+    "description": "修改课件艺术字平铺填充的纹理",
+    "files": [
+      {
+        "name": "材质1",
+        "path": "Main/.packages/ArtText/material1.png",
+        "description": ""
+      },
+      {
+        "name": "材质2",
+        "path": "Main/.packages/ArtText/material2.png",
+        "description": ""
+      },
+      {
+        "name": "材质3",
+        "path": "Main/.packages/ArtText/material3.png",
+        "description": ""
+      },
+      {
+        "name": "材质4",
+        "path": "Main/.packages/ArtText/material4.png",
+        "description": ""
+      }
+    ]
+  },
+  "乐器组件": {
+    "description": "修改希沃白板乐器功能的预设MIDI，这些文件不能被预览",
+    "files": [
+      {
+        "name": "Cuckoo",
+        "path": "Main/.packages/Sounds/Midi/Cuckoo.mid",
+        "description": ""
+      },
+      {
+        "name": "HappyBirthday",
+        "path": "Main/.packages/Sounds/Midi/HappyBirthday.mid",
+        "description": ""
+      },
+      {
+        "name": "LittleStar",
+        "path": "Main/.packages/Sounds/Midi/LittleStar.mid",
+        "description": ""
+      },
+      {
+        "name": "SchoolSong",
+        "path": "Main/.packages/Sounds/Midi/SchoolSong.mid",
+        "description": ""
       }
     ]
   },

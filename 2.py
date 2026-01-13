@@ -80,10 +80,8 @@ gotoeditdirectly = True  # 记录用户tm是怎么来EditPage的，直接点进�
 isedited = False  # edit的过去式是这个吗（？
 
 
-# ====== Sound Effect Support (minimal & global) ======
-
 if not hasattr(builtins, "sound"):
-    builtins.sound = True  # 默认开启（你已有就不会覆盖）
+    builtins.sound = True
 
 
 _sfx_player = None
@@ -581,50 +579,6 @@ class AboutPage(SmoothScrollArea):
         """
 
 
-class SettingPage(SmoothScrollArea):
-    current_version = 1.0
-
-    def auto_update(self):
-        try:
-            # 首先尝试从网络加载
-            response = requests.get(
-                "https://xxtsoft.top/support/ENTP/update.json", timeout=10
-            )
-            if response.status_code == 200:
-                self.themes_data = response.json()
-                InfoBar.success(
-                    "加载成功", "已从服务器加载主题列表", parent=self, duration=2000
-                )
-                data = json.loads(response.text)
-                latest_version = data.get("version")
-                if latest_version > self.current_version:
-                    description = data.get("description")
-                    InfoBar.info(
-                        f"发现新版本: {latest_version}",
-                        description,
-                        parent=self,
-                        duration=2000,
-                    )
-                    download_link = data.get("link")
-                    # How to raise a dialog and ask user to download the new version?
-                    reply = QMessageBox.question(
-                        self,
-                        "更新可用",
-                        f"发现新版本: {latest_version}\n\n{description}",
-                        QMessageBox.Yes | QMessageBox.No,
-                    )
-                    if reply == QMessageBox.Yes:
-                        os.startfile(download_link)
-                else:
-                    InfoBar.info(
-                        "已是最新版本", "当前已是最新版本", parent=self, duration=2000
-                    )
-            else:
-                raise Exception(f"HTTP {response.status_code}")
-        except Exception as e:
-            InfoBar.error("更新失败", f"无法检查更新: {e}", parent=self, duration=2000)
-
-
 class BannerWidget(QWidget):
     def __init__(self, main_window, parent=None):
         super().__init__(parent)
@@ -998,7 +952,7 @@ class ProfilePage(SmoothScrollArea):
             icon=PhotoFontIcon("\uf4aa"),
             title="Project Sekai 贴纸",
             content="在班级等公共场合可关闭此选项以免社死",
-            widget=aboutpage_switch,
+            widget=pjsk_switch,
         )
         layout.addWidget(card)
 
@@ -2084,7 +2038,6 @@ class MainWindow(FluentWindow):
         self.profile_page = ProfilePage(self)
         if setting_data["allow_about"]:
             self.about_page = AboutPage(self)
-        # self.setting_page = SettingPage(self.config)
         self.initNavigation()
         self.initWindow()
 
@@ -2132,6 +2085,7 @@ if __name__ == "__main__":
 
     if not setting_data.get("newest_path"):
         ProfilePage.on_find_clicked(None)
+        
     else:
         newest_path = setting_data.get("newest_path")
         get_correct_path = True
@@ -2140,8 +2094,7 @@ if __name__ == "__main__":
         gotoeditdirectly = False
         newest_path = "./Temp"
     window = MainWindow()
-    if DEBUG["sound"]:
-        print("sound on")
+   
     setThemeColor(ThemeColor.PRIMARY.color())
     setTheme(Theme.AUTO)
     window.show()
@@ -2149,6 +2102,8 @@ if __name__ == "__main__":
         window.switchTo(window.edit_page)
         window.setWindowTitle("欢迎回来 - 从上次离开的地方继续编辑")
     app.setAttribute(Qt.ApplicationAttribute.AA_DontCreateNativeWidgetSiblings)
+    builtins.app_ready = True
+    if setting_data["sfx_sound"]:
+        builtins.sound = True
 
-    DEBUG["app_ready"] = True
     app.exec()
