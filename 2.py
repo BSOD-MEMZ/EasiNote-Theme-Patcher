@@ -567,16 +567,6 @@ class AboutPage(SmoothScrollArea):
             "EasiNote Theme Patcher - Makes EasiNote great again!"
         )
         content_layout.addWidget(subtitle_label)
-        # add_intro_card(content_layout)
-
-    def add_intro_card(self):
-        # TODO: 在这里加入程序介绍内容
-        pass
-        """
-        introcard = ExpandGroupSettingCard(
-            title="测试"
-        )
-        """
 
 
 class BannerWidget(QWidget):
@@ -698,11 +688,13 @@ class ProfilePage(SmoothScrollArea):
     # TODO: 做出真正的登录功能，我会尽力学SQL的，应该吧
     def __init__(self, main_window):
         super().__init__()
+        global setting_data
         self.main_window = main_window
         self.init_ui()
         self.mainlayout.addStretch(1)
+        self.mainlayout.setContentsMargins(40, 20, 40, 20)
         self.mainlayout.setSpacing(8)
-        self.mainlayout.setContentsMargins(20, 12, 20, 12)
+        
 
     def init_ui(self):
         global setting_data
@@ -716,13 +708,18 @@ class ProfilePage(SmoothScrollArea):
 
         self.content_widget = QWidget(self)
         self.setWidget(self.content_widget)
-
+        
         self.add_profile_card()
+        if not setting_data["profile_banner"]:
+            title_label = TitleLabel("设置")
+            self.mainlayout.addWidget(title_label)
         self.avatar.clicked.connect(lambda: self.showdialog())
         self.add_path_buttons(self.mainlayout)
         self.add_editor_buttons(self.mainlayout)
         self.set_global_color(self.mainlayout)
         self.pandora_boxxx(self.mainlayout)
+
+        
 
     def add_profile_card(self):
         self.avatar = AvatarWidget("Resource/avatar.png", self)
@@ -1095,6 +1092,36 @@ class ProfilePage(SmoothScrollArea):
                     duration=2000,
                 )
 
+class PandoraPage(SmoothScrollArea):
+    def __init__(self, main_window):
+        super().__init__()
+        global setting_data
+        self.main_window = main_window
+        self.init_ui()
+        self.content_widget.addStretch(1)
+        self.content_widget.setContentsMargins(40, 20, 40, 20)
+        self.content_widget.setSpacing(8)
+        
+
+    def init_ui(self):
+        global setting_data
+        self.setObjectName("PandoraPage")
+        self.setStyleSheet("border: none; background-color: transparent;")
+
+        self.setWidgetResizable(True)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setMinimumSize(750, 480)
+        QScroller.grabGesture(self.viewport(), QScroller.LeftMouseButtonGesture)
+
+        self.content_widget = QWidget(self)
+        self.setWidget(self.content_widget)
+        
+        title_label = TitleLabel("PANDORA BOXXX")
+        self.titlelayout = QVBoxLayout
+        self.titlelayout.addLayout(title_label)
+        subtitle = SubtitleLabel("警告：这些内容仅供测试，开发者不对使用此页面能造成的任何后果负责")
+        self.titlelayout.addWidget(subtitle)
+        self.content_widget.addLayout(self.titlelayout)
 
 class LoginEngine(QWidget):
     """Fuck you SQLite3"""
@@ -2038,6 +2065,8 @@ class MainWindow(FluentWindow):
         self.profile_page = ProfilePage(self)
         if setting_data["allow_about"]:
             self.about_page = AboutPage(self)
+        if setting_data["debug"]:
+            self.pandora_page = PandoraPage(self)
         self.initNavigation()
         self.initWindow()
 
@@ -2054,6 +2083,8 @@ class MainWindow(FluentWindow):
         self.addSubInterface(self.edit_page, PhotoFontIcon("\ue70f"), "创作")
         self.addSubInterface(self.store_page, PhotoFontIcon("\ue719"), "商店")
         self.addSubInterface(self.profile_page, PhotoFontIcon("\ue713"), "设置")
+        if setting_data["debug"]:
+            self.addSubInterface(self.pandora_page, PhotoFontIcon("\uF158"), "PANDORA BOXXX")
         if setting_data["allow_about"]:
             self.addSubInterface(self.about_page, PhotoFontIcon("\ue946"), "关于")
         self.navigationInterface.setExpandWidth(180)

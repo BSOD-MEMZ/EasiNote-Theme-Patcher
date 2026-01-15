@@ -1,1 +1,19 @@
-{"version": "1.0.1", "newest_path": "C:\\Program Files (x86)\\Seewo\\EasiNote5\\EasiNote5_5.2.4.9440", "backup_path": "", "editor_path": "", "token": "", "proxy": "https://xxtsoft.top/support/ENTP/", "first_run": true, "global_theme": "light", "global_color": "Auto", "not_to_ask_patch": false, "profile_banner": false, "debug": true, "sfx_sound": true, "edit_temp_before_close": false, "allow_about": false, "icon_font": "Resource/fonts/SEGOEICONS.TTF", "enable_pjsk": true}
+{
+    "version": "1.0.1",
+    "newest_path": "C:\\Program Files (x86)\\Seewo\\EasiNote5\\EasiNote5_5.2.4.9440",
+    "backup_path": "",
+    "editor_path": "",
+    "token": "",
+    "proxy": "https://xxtsoft.top/support/ENTP/",
+    "first_run": true,
+    "global_theme": "light",
+    "global_color": "Auto",
+    "not_to_ask_patch": false,
+    "profile_banner": false,
+    "debug": true,
+    "sfx_sound": true,
+    "edit_temp_before_close": false,
+    "allow_about": false,
+    "icon_font": "Resource/fonts/SEGOEICONS.TTF",
+    "enable_pjsk": true
+}
