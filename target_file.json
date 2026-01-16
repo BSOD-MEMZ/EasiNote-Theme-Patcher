@@ -28,9 +28,24 @@
     "description": "修改会被多种游戏复用的资源",
     "files": [
       {
-        "name": "背景音乐",
-        "path": "Main/.packages/Activities/Audios/Judge/BackgroundMusic.mp3",
-        "description": "刻进DNA的音乐，这段音频会被重复播放"
+        "name": "按钮音效",
+        "path": "Main/.packages/Activities/Audios/Button.mp3",
+        "description": ""
+      },
+      {
+        "name": "点击音效",
+        "path": "Main/.packages/Activities/Audios/click.mp3",
+        "description": ""
+      },
+      {
+        "name": "正确音效",
+        "path": "Main/.packages/Activities/Audios/Correct.mp3",
+        "description": ""
+      },
+      {
+        "name": "错误音效",
+        "path": "Main/.packages/Activities/Audios/Error.mp3",
+        "description": ""
       }
     ]
   },
