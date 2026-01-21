@@ -122,7 +122,7 @@ def _play_sfx(filename: str):
 
 
 def sfx_open():
-    _play_sfx("move.wav")
+    _play_sfx("click.wav")
 
 
 def sfx_click():
@@ -694,7 +694,6 @@ class ProfilePage(SmoothScrollArea):
         self.mainlayout.addStretch(1)
         self.mainlayout.setContentsMargins(40, 20, 40, 20)
         self.mainlayout.setSpacing(8)
-        
 
     def init_ui(self):
         global setting_data
@@ -708,7 +707,7 @@ class ProfilePage(SmoothScrollArea):
 
         self.content_widget = QWidget(self)
         self.setWidget(self.content_widget)
-        
+
         self.add_profile_card()
         if not setting_data["profile_banner"]:
             title_label = TitleLabel("设置")
@@ -717,9 +716,7 @@ class ProfilePage(SmoothScrollArea):
         self.add_path_buttons(self.mainlayout)
         self.add_editor_buttons(self.mainlayout)
         self.set_global_color(self.mainlayout)
-        self.pandora_boxxx(self.mainlayout)
-
-        
+        """self.pandora_boxxx(self.mainlayout)"""
 
     def add_profile_card(self):
         self.avatar = AvatarWidget("Resource/avatar.png", self)
@@ -879,7 +876,7 @@ class ProfilePage(SmoothScrollArea):
     def set_global_color(self, layout):
         global setting_data
         card = ExpandGroupSettingCard(
-            icon=PhotoFontIcon("\ue771"), title="外观设置", content="设置程序的外观"
+            icon=PhotoFontIcon("\ue771"), title="个性化", content="设置程序的外观和行为"
         )
         color_choicer = ComboBox()
         color_choicer.addItems(["浅色", "深色", "跟随系统"])
@@ -915,11 +912,20 @@ class ProfilePage(SmoothScrollArea):
         else:
             pjsk_switch = SwitchButton()
             pjsk_switch.setChecked(bool(setting_data.get("enable_pjsk", False)))
+        if setting_data.get("sfx_sound"):
+            sfx_switch = SwitchButton()
+            sfx_switch.setChecked(bool(setting_data.get("sfx_sound", True)))
+        else:
+            sfx_switch = SwitchButton()
+            sfx_switch.setChecked(bool(setting_data.get("sfx_sound", False)))
         aboutpage_switch.checkedChanged.connect(
             lambda: self.on_about_changed(aboutpage_switch.isChecked)
         )
         pjsk_switch.checkedChanged.connect(
             lambda: self.on_pjsk_changed(pjsk_switch.isChecked)
+        )
+        sfx_switch.checkedChanged.connect(
+            lambda: self.on_sfx_changed(sfx_switch.isChecked)
         )
         card.addGroup(
             icon=PhotoFontIcon("\ue706"),
@@ -951,6 +957,12 @@ class ProfilePage(SmoothScrollArea):
             content="在班级等公共场合可关闭此选项以免社死",
             widget=pjsk_switch,
         )
+        card.addGroup(
+            icon=PhotoFontIcon("\ue767"),
+            title="音效反馈",
+            content="程序会在部分事件发生时播放音效",
+            widget=sfx_switch,
+        )
         layout.addWidget(card)
 
     def pandora_boxxx(self, layout):
@@ -975,22 +987,37 @@ class ProfilePage(SmoothScrollArea):
 
         layout.addWidget(card)
 
+    def on_sfx_changed(self, checked):
+        global setting_data
+        if checked:
+            setting_data["sfx_sound"] = True
+            sfx_open()
+            json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+        else:
+            setting_data["sfx_sound"] = False
+            sfx_exit()
+            json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+
     def on_pjsk_changed(self, checked):
         global setting_data
         if checked:
             setting_data["enable_pjsk"] = True
+            sfx_open()
             json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
         else:
             setting_data["enable_pjsk"] = False
+            sfx_exit()
             json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
 
     def on_about_changed(self, checked):
         global setting_data
         if checked:
             setting_data["allow_about"] = True
+            sfx_open()
             json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
         else:
             setting_data["allow_about"] = False
+            sfx_exit()
             json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
 
     def verify_debug_account(self, mail):
@@ -1001,6 +1028,7 @@ class ProfilePage(SmoothScrollArea):
             json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
 
     def on_color_changed(self, index):
+        sfx_open()
         global setting_data
         if index == 0:
             setTheme(Theme.LIGHT)
@@ -1014,6 +1042,7 @@ class ProfilePage(SmoothScrollArea):
         json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
 
     def on_font_changed(self, index):
+        sfx_open()
         global setting_data
         if index == 0:
             setting_data["icon_font"] = "Resource/fonts/SEGOEICONS.TTF"
@@ -1035,6 +1064,7 @@ class ProfilePage(SmoothScrollArea):
 
     def on_editor_clicked(self):
         global setting_data
+        sfx_open()
         temp = QFileDialog.getOpenFileName(
             self,
             "选择图片编辑器(っ´Ι`)っ",
@@ -1092,6 +1122,8 @@ class ProfilePage(SmoothScrollArea):
                     duration=2000,
                 )
 
+
+"""
 class PandoraPage(SmoothScrollArea):
     def __init__(self, main_window):
         super().__init__()
@@ -1101,7 +1133,6 @@ class PandoraPage(SmoothScrollArea):
         self.content_widget.addStretch(1)
         self.content_widget.setContentsMargins(40, 20, 40, 20)
         self.content_widget.setSpacing(8)
-        
 
     def init_ui(self):
         global setting_data
@@ -1115,13 +1146,17 @@ class PandoraPage(SmoothScrollArea):
 
         self.content_widget = QWidget(self)
         self.setWidget(self.content_widget)
-        
+
         title_label = TitleLabel("PANDORA BOXXX")
-        self.titlelayout = QVBoxLayout
-        self.titlelayout.addLayout(title_label)
-        subtitle = SubtitleLabel("警告：这些内容仅供测试，开发者不对使用此页面能造成的任何后果负责")
+        self.titlelayout = QVBoxLayout()
+        self.titlelayout.addWidget(title_label)
+        subtitle = SubtitleLabel(
+            "警告：这些内容仅供测试，开发者不对使用此页面能造成的任何后果负责"
+        )
         self.titlelayout.addWidget(subtitle)
-        self.content_widget.addLayout(self.titlelayout)
+        # self.content_widget.addLayout(self.titlelayout)
+"""
+
 
 class LoginEngine(QWidget):
     """Fuck you SQLite3"""
@@ -1539,7 +1574,7 @@ class EditPage(SmoothScrollArea):
 
         except Exception as e:
             print(f"读取文件时出错: {e}")
-            error_item = QStandardItem("加载文件失败")
+            error_item = QStandardItem("打开失败Σ(っ °Д °;)っ")
             error_item.setEditable(False)
             desc_item = QStandardItem("请检查target_file.json文件")
             desc_item.setEditable(False)
@@ -2065,8 +2100,10 @@ class MainWindow(FluentWindow):
         self.profile_page = ProfilePage(self)
         if setting_data["allow_about"]:
             self.about_page = AboutPage(self)
+        """
         if setting_data["debug"]:
             self.pandora_page = PandoraPage(self)
+        """
         self.initNavigation()
         self.initWindow()
 
@@ -2083,8 +2120,12 @@ class MainWindow(FluentWindow):
         self.addSubInterface(self.edit_page, PhotoFontIcon("\ue70f"), "创作")
         self.addSubInterface(self.store_page, PhotoFontIcon("\ue719"), "商店")
         self.addSubInterface(self.profile_page, PhotoFontIcon("\ue713"), "设置")
+        """
         if setting_data["debug"]:
-            self.addSubInterface(self.pandora_page, PhotoFontIcon("\uF158"), "PANDORA BOXXX")
+            self.addSubInterface(
+                self.pandora_page, PhotoFontIcon("\uf158"), "PANDORA BOXXX"
+            )
+        """
         if setting_data["allow_about"]:
             self.addSubInterface(self.about_page, PhotoFontIcon("\ue946"), "关于")
         self.navigationInterface.setExpandWidth(180)
@@ -2116,7 +2157,7 @@ if __name__ == "__main__":
 
     if not setting_data.get("newest_path"):
         ProfilePage.on_find_clicked(None)
-        
+
     else:
         newest_path = setting_data.get("newest_path")
         get_correct_path = True
@@ -2125,7 +2166,7 @@ if __name__ == "__main__":
         gotoeditdirectly = False
         newest_path = "./Temp"
     window = MainWindow()
-   
+
     setThemeColor(ThemeColor.PRIMARY.color())
     setTheme(Theme.AUTO)
     window.show()

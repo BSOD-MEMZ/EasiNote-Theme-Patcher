@@ -30,21 +30,51 @@
       {
         "name": "按钮音效",
         "path": "Main/.packages/Activities/Audios/Button.mp3",
-        "description": ""
+        "description": "游戏开始按钮被点击"
       },
       {
         "name": "点击音效",
         "path": "Main/.packages/Activities/Audios/click.mp3",
-        "description": ""
+        "description": "游戏重置等UX事件"
       },
       {
         "name": "正确音效",
         "path": "Main/.packages/Activities/Audios/Correct.mp3",
-        "description": ""
+        "description": "分组竞争等活动选中正确选项"
       },
       {
         "name": "错误音效",
         "path": "Main/.packages/Activities/Audios/Error.mp3",
+        "description": "分组竞争等活动选中错误选项"
+      },
+      {
+        "name": "ReadyGo音效",
+        "path": "Main/.packages/Activities/Audios/ReadyGo.mp3",
+        "description": ""
+      },
+      {
+        "name": "另一种正确音效",
+        "path": "Main/.packages/Activities/Audios/right.mp3",
+        "description": ""
+      },
+      {
+        "name": "游戏结束",
+        "path": "Main/.packages/Activities/Audios/Statistical.mp3",
+        "description": ""
+      },
+      {
+        "name": "游戏结束（胜利）",
+        "path": "Main/.packages/Activities/Audios/victory.mp3",
+        "description": ""
+      }
+    ]
+  },
+  "游戏组件 - 分组": {
+    "description": "修改双人分组游戏的资源文件",
+    "files": [
+      {
+        "name": "背景音乐",
+        "path": "Main/.packages/Activities/Audios/GameBack.mp3",
         "description": ""
       }
     ]
@@ -60,7 +90,7 @@
       {
         "name": "活动结束音效",
         "path": "Main/.packages/Activities/Audios/Judge/ActivityFinish.mp3",
-        "description": "活动结束时播放的音效"
+        "description": ""
       },
       {
         "name": "Amazing音效",
@@ -68,9 +98,14 @@
         "description": "当两边判断都正确时播放的音效"
       },
       {
+        "name": "ReadyGo音效",
+        "path": "Main/.packages/Activities/Audios/Judge/ReadyGo.mp3",
+        "description": ""
+      },
+      {
         "name": "答题按钮点击音效",
         "path": "Main/.packages/Activities/Audios/Judge/AnswerButtonClick.mp3",
-        "description": "点击答题按钮时播放的音效"
+        "description": ""
       },
       {
         "name": "喝彩音效",
@@ -80,7 +115,162 @@
       {
         "name": "ComeOnFight音效",
         "path": "Main/.packages/Activities/Audios/Judge/ComeOnFight.mp3",
-        "description": "游戏开始时的语音资源"
+        "description": ""
+      },
+      {
+        "name": "烟花音效",
+        "path": "Main/.packages/Activities/Audios/Judge/Fireworks.mp3",
+        "description": "目前不清楚此音效在何处使用"
+      },
+      {
+        "name": "冰冻攻击音效",
+        "path": "Main/.packages/Activities/Audios/Judge/FrozenAttack.mp3",
+        "description": ""
+      },
+      {
+        "name": "冰冻受击音效",
+        "path": "Main/.packages/Activities/Audios/Judge/FrozenHit.mp3",
+        "description": ""
+      },
+      {
+        "name": "锤子攻击音效",
+        "path": "Main/.packages/Activities/Audios/Judge/HammerAttack.mp3",
+        "description": ""
+      },
+      {
+        "name": "锤子受击音效",
+        "path": "Main/.packages/Activities/Audios/Judge/HammerHit.mp3",
+        "description": ""
+      },
+      {
+        "name": "雷电攻击音效",
+        "path": "Main/.packages/Activities/Audios/Judge/LightingAttack.mp3",
+        "description": ""
+      },
+      {
+        "name": "雷电受击音效",
+        "path": "Main/.packages/Activities/Audios/Judge/LightingHit.mp3",
+        "description": ""
+      },
+      {
+        "name": "攻击音效",
+        "path": "Main/.packages/Activities/Audios/Judge/WinnerAttack.mp3",
+        "description": ""
+      },
+      {
+        "name": "失败者返场音效",
+        "path": "Main/.packages/Activities/Audios/Judge/LoserComeBack.mp3",
+        "description": ""
+      },
+      {
+        "name": "魔法题音效",
+        "path": "Main/.packages/Activities/Audios/Judge/MagicQuestionShow.mp3",
+        "description": ""
+      },
+      {
+        "name": "PlayerSpeedLine",
+        "path": "Main/.packages/Activities/Audios/Judge/PlayerSpeedLine.mp3",
+        "description": "一个很诡异的音效，目前不清楚此音效在何处使用"
+      },
+      {
+        "name": "问题倒计时警告音效",
+        "path": "Main/.packages/Activities/Audios/Judge/QuestionCountingDown.mp3",
+        "description": ""
+      },
+      {
+        "name": "问题倒计时结束音效",
+        "path": "Main/.packages/Activities/Audios/Judge/QuestionCountDownEnd.mp3",
+        "description": ""
+      }
+    ]
+  },
+  "游戏组件 - 拔河": {
+    "description": "修改选择题游戏的资源文件",
+    "files": [
+      {
+        "name": "背景音乐",
+        "path": "Main/.packages/Activities/Audios/Choice/bgm.mp3",
+        "description": ""
+      },
+      {
+        "name": "正确音效",
+        "path": "Main/.packages/Activities/Audios/Choice/click_correct.mp3",
+        "description": ""
+      },
+      {
+        "name": "错误音效",
+        "path": "Main/.packages/Activities/Audios/Choice/click_wrong.mp3",
+        "description": ""
+      },
+      {
+        "name": "结束喝彩",
+        "path": "Main/.packages/Activities/Audios/Choice/finish_cheer.mp3",
+        "description": ""
+      }
+    ]
+  },
+  "游戏组件 - 知识配对": {
+    "description": "修改配对游戏的资源文件",
+    "files": [
+      {
+        "name": "基础模板 - 头",
+        "path": "Main/.packages/Activities/TextMatch/3D753556DB24031CF7042F57183B97E3/CA3060442288DDAC1D37D65FFD78CE59.png",
+        "description": ""
+      },
+      {
+        "name": "基础模板 - 尾",
+        "path": "Main/.packages/Activities/TextMatch/3D753556DB24031CF7042F57183B97E3/1FED6F094B3F693E9D11E75BBE56EEE6.png",
+        "description": ""
+      },
+      {
+        "name": "基础模板 - 背景板",
+        "path": "Main/.packages/Activities/TextMatch/3D753556DB24031CF7042F57183B97E3/688477064A78B799979AD41D8EDE9910.jpg",
+        "description": ""
+      },
+      {
+        "name": "天空之城 - 头",
+        "path": "Main/.packages/Activities/TextMatch/4DFAA01B5F674FECA5180F07A481470E/311D4475A2F348B9BBB72EE2A30959FA.png",
+        "description": ""
+      },
+      {
+        "name": "天空之城 - 尾",
+        "path": "Main/.packages/Activities/TextMatch/4DFAA01B5F674FECA5180F07A481470E/D2577ACA23634F86BBE48DCC02F216BD.png",
+        "description": ""
+      },
+      {
+        "name": "天空之城 - 背景板",
+        "path": "Main/.packages/Activities/TextMatch/4DFAA01B5F674FECA5180F07A481470E/14DB735DBCB943268D613109DD6480AB.jpg",
+        "description": ""
+      },
+      {
+        "name": "群花丛簇 - 头",
+        "path": "Main/.packages/Activities/TextMatch/6FFAA01B5F674FECA5180F07A481470E/9205EA13F95D423B90340253063941E9.png",
+        "description": ""
+      },
+      {
+        "name": "群花丛簇 - 尾",
+        "path": "Main/.packages/Activities/TextMatch/6FFAA01B5F674FECA5180F07A481470E/69A827A94FFA4EC58862D794BEC51906.png",
+        "description": ""
+      },
+      {
+        "name": "群花丛簇 - 背景板",
+        "path": "Main/.packages/Activities/TextMatch/6FFAA01B5F674FECA5180F07A481470E/478B42FB973C4051991DCAFCD7D5F621.jpg",
+        "description": ""
+      },
+      {
+        "name": "潜艇导弹 - 头",
+        "path": "Main/.packages/Activities/TextMatch/8BFAA01B5F674FECA5180F07A483370E/794B58612B5B4C2AA0E0715AB8DCC349.png",
+        "description": ""
+      },
+      {
+        "name": "潜艇导弹 - 尾",
+        "path": "Main/.packages/Activities/TextMatch/8BFAA01B5F674FECA5180F07A483370E/1373C0B6D1824210951D5281E1929931.png",
+        "description": ""
+      },
+      {
+        "name": "潜艇导弹 - 背景板",
+        "path": "Main/.packages/Activities/TextMatch/8BFAA01B5F674FECA5180F07A483370E/2CAD19BEEC4340A9BA9D70D3E569B0F8.jpg",
+        "description": ""
       }
     ]
   },
