@@ -6,11 +6,16 @@ import subprocess
 import sys
 from pathlib import Path
 
-import py7zr
+try:
+    import py7zr  # lightweight pinned version installed for Py3.8 compatibility
+    _HAS_PY7ZR = True
+except Exception:
+    py7zr = None
+    _HAS_PY7ZR = False
 import pygame
 import requests
-from PySide6.QtCore import Qt
-from PySide6.QtGui import (
+from PySide2.QtCore import Qt
+from PySide2.QtGui import (
     QGuiApplication,
     QIcon,
     QPainter,
@@ -18,7 +23,7 @@ from PySide6.QtGui import (
     QStandardItem,
     QStandardItemModel,
 )
-from PySide6.QtWidgets import (
+from PySide2.QtWidgets import (
     QApplication,
     QFileDialog,
     QHBoxLayout,
@@ -78,6 +83,7 @@ get_correct_path = False
 setting_data = {}
 gotoeditdirectly = True  # 记录用户tm是怎么来EditPage的，直接点进去还是打开了文件，如果打开文件大抵是要解压到临时目录然后将newestpath设置为那个临时目录，但是万一主题文件不全怎么办？
 isedited = False  # edit的过去式是这个吗（？
+SETTINGS_PATH = "setting.json"
 
 
 if not hasattr(builtins, "sound"):
@@ -86,6 +92,36 @@ if not hasattr(builtins, "sound"):
 
 _sfx_player = None
 _sfx_output = None
+
+
+def _find_7z_executable():
+    return shutil.which("7z") or shutil.which("7za")
+
+
+def extract_7z(archive_path: str, output_dir: str):
+    if _HAS_PY7ZR:
+        with py7zr.SevenZipFile(archive_path, "r") as archive:
+            archive.extractall(output_dir)
+        return
+
+    exe = _find_7z_executable()
+    if not exe:
+        raise RuntimeError("找不到 7z/7za，可安装 7-Zip 或安装 py7zr 依赖")
+    subprocess.run([exe, "x", archive_path, f"-o{output_dir}", "-y"], check=True)
+
+
+def create_7z(archive_path: str, files, base_dir: str):
+    if _HAS_PY7ZR:
+        with py7zr.SevenZipFile(archive_path, "w") as archive:
+            for temp in files:
+                archive.write(temp, os.path.relpath(temp, base_dir))
+        return
+
+    exe = _find_7z_executable()
+    if not exe:
+        raise RuntimeError("找不到 7z/7za，可安装 7-Zip 或安装 py7zr 依赖")
+    rel_files = [os.path.relpath(f, base_dir) for f in files]
+    subprocess.run([exe, "a", archive_path, *rel_files], check=True, cwd=base_dir)
 
 
 class SimpleAudioPlayer:
@@ -119,6 +155,16 @@ def _play_sfx(filename: str):
 
     path = os.path.abspath(os.path.join("Resource", "sounds", filename))
     _sfx_player.play(path)
+
+
+def load_settings():
+    with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_settings():
+    with open(SETTINGS_PATH, "w", encoding="utf-8") as f:
+        json.dump(setting_data, f, ensure_ascii=False, indent=4)
 
 
 def sfx_open():
@@ -180,11 +226,9 @@ class EasiNoteThemePatcherEngine(QWidget):
         newest_path = "./Temp"
         shutil.rmtree("./Temp", ignore_errors=True)
         temp_dir = "./Temp"
-        with py7zr.SevenZipFile(file_path, "r") as archive:
-            archive.extractall(temp_dir)
+        extract_7z(file_path, temp_dir)
         setting_data["edit_temp_before_close"] = True
-        with open("setting.json", "w", encoding="utf-8") as f:
-            json.dump(setting_data, f, ensure_ascii=False, indent=4)
+        save_settings()
         gotoeditdirectly = False
         self.main_window.setWindowTitle("EasiNote Theme Patcher - 编辑临时文件")
 
@@ -991,41 +1035,43 @@ class ProfilePage(SmoothScrollArea):
         global setting_data
         if checked:
             setting_data["sfx_sound"] = True
+            builtins.sound = True
             sfx_open()
-            json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+            save_settings()
         else:
             setting_data["sfx_sound"] = False
+            builtins.sound = False
             sfx_exit()
-            json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+            save_settings()
 
     def on_pjsk_changed(self, checked):
         global setting_data
         if checked:
             setting_data["enable_pjsk"] = True
             sfx_open()
-            json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+            save_settings()
         else:
             setting_data["enable_pjsk"] = False
             sfx_exit()
-            json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+            save_settings()
 
     def on_about_changed(self, checked):
         global setting_data
         if checked:
             setting_data["allow_about"] = True
             sfx_open()
-            json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+            save_settings()
         else:
             setting_data["allow_about"] = False
             sfx_exit()
-            json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+            save_settings()
 
     def verify_debug_account(self, mail):
         global setting_data
         if mail == "sorutokawaii@xxtsoft.top" or mail == "iwanttofxxk@0xabcd.dev":
             InfoBar.success("ReMaster Lv.15 Unlocked!", "下次启动应用生效")
             setting_data["debug"] = True
-            json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+            save_settings()
 
     def on_color_changed(self, index):
         sfx_open()
@@ -1039,7 +1085,7 @@ class ProfilePage(SmoothScrollArea):
         else:
             setTheme(Theme.AUTO)
             setting_data["global_theme"] = "system"
-        json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+        save_settings()
 
     def on_font_changed(self, index):
         sfx_open()
@@ -1048,7 +1094,7 @@ class ProfilePage(SmoothScrollArea):
             setting_data["icon_font"] = "Resource/fonts/SEGOEICONS.TTF"
         else:
             setting_data["icon_font"] = "Resource/fonts/SEGMDL2.TTF"
-        json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+        save_settings()
 
     def on_input_clicked(self):
         global newest_path
@@ -1057,10 +1103,7 @@ class ProfilePage(SmoothScrollArea):
         if w.exec():
             newest_path = w.path_edit.text()
             setting_data["newest_path"] = newest_path
-            json.dump(
-                setting_data,
-                open("setting.json", "w", encoding="utf-8"),
-            )
+            save_settings()
 
     def on_editor_clicked(self):
         global setting_data
@@ -1072,10 +1115,7 @@ class ProfilePage(SmoothScrollArea):
             "可执行文件 (*.exe);;所有文件 (*)",
         )[0]
         setting_data["editor_path"] = temp
-        json.dump(
-            setting_data,
-            open("setting.json", "w", encoding="utf-8"),
-        )
+        save_settings()
 
     def on_find_clicked(self):
         sfx_open()
@@ -1102,7 +1142,7 @@ class ProfilePage(SmoothScrollArea):
                     )
                 print("Log: Found EasiNote path automatically:", newest_path)
                 setting_data["newest_path"] = newest_path
-                json.dump(setting_data, open("setting.json", "w", encoding="utf-8"))
+                save_settings()
                 get_correct_path = True
             except Exception as e:
                 print("Log: Failed to find EasiNote path automatically:", e)
@@ -1736,9 +1776,7 @@ class EditPage(SmoothScrollArea):
         output_path, _ = QFileDialog.getSaveFileName(
             self, "保存主题包", "", "7z 压缩包 (*.7z)"
         )
-        with py7zr.SevenZipFile(output_path, "w") as archive:
-            for temp in modified:
-                archive.write(temp, os.path.relpath(temp, newest_path))
+        create_7z(output_path, modified, newest_path)
 
     def preview_image(self, image_path):
         try:
@@ -1749,7 +1787,7 @@ class EditPage(SmoothScrollArea):
                 scaled_pixmap = pixmap.scaled(
                     self.image_preview_frame.width() - 40,
                     self.image_preview_frame.height() - 40,
-                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.KeepAspectRatio,
                     Qt.SmoothTransformation,
                 )
                 self.image_preview.setPixmap(scaled_pixmap)
@@ -1824,8 +1862,7 @@ class EditPage(SmoothScrollArea):
             shutil.copy2(self.current_file_path, file_path)
 
             setting_data["last_export_dir"] = str(Path(file_path).parent)
-            with open("setting.json", "w", encoding="utf-8") as f:
-                json.dump(setting_data, f, ensure_ascii=False, indent=4)
+            save_settings()
 
             InfoBar.success(
                 "导出成功", f"文件已导出到: {file_path}", parent=self, duration=2000
@@ -2011,10 +2048,7 @@ class EditPage(SmoothScrollArea):
                         )
 
                         setting_data["first_run"] = False
-                        with open(
-                            "setting.json", "w", encoding="utf-8"
-                        ) as setting_file:
-                            json.dump(setting_data, setting_file, indent=4)
+                        save_settings()
                 except Exception as e:
                     InfoBar.error(
                         "启动失败",
@@ -2051,8 +2085,7 @@ class EditPage(SmoothScrollArea):
             setting_data["edit_temp_before_close"] = False
             newest_path = setting_data["newest_path"]
             shutil.rmtree("./Temp", ignore_errors=True)
-            with open("setting.json", "w", encoding="utf-8") as f:
-                json.dump(setting_data, f, ensure_ascii=False, indent=4)
+            save_settings()
             gotoeditdirectly = True
             self.main_window.setWindowTitle("EasiNote Theme Patcher - 实时编辑模式")
         else:
@@ -2150,10 +2183,11 @@ if __name__ == "__main__":
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     """
     try:
-        setting_data = json.load(open("setting.json", "r", encoding="utf-8"))
+        setting_data = load_settings()
     except Exception as e:
         print("setting.json not found!" + str(e))
         sys.exit(0)
+    builtins.sound = bool(setting_data.get("sfx_sound", True))
 
     if not setting_data.get("newest_path"):
         ProfilePage.on_find_clicked(None)
@@ -2173,9 +2207,8 @@ if __name__ == "__main__":
     if setting_data["edit_temp_before_close"]:
         window.switchTo(window.edit_page)
         window.setWindowTitle("欢迎回来 - 从上次离开的地方继续编辑")
-    app.setAttribute(Qt.ApplicationAttribute.AA_DontCreateNativeWidgetSiblings)
+    app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
     builtins.app_ready = True
-    if setting_data["sfx_sound"]:
-        builtins.sound = True
+    # builtins.sound 已在读取 setting.json 时同步
 
-    app.exec()
+    app.exec_()

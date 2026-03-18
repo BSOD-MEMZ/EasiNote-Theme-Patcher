@@ -1,0 +1,13 @@
+[project]
+name = "easinote-theme-patcher"
+version = "0.1.0"
+description = "EasiNote theme patcher and editor"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "PySide2",
+    "PySide2-Fluent-Widgets",
+    "pygame",
+    "py7zr==0.9.0",
+    "requests",
+]
